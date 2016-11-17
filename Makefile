@@ -5,7 +5,7 @@
 #######################################
 
 
-PROG = pgmtopgm
+PROG = gradient
 
 all : $(PROG)
 
@@ -17,6 +17,7 @@ LDFLAGS   =  -g -lm
 
 #pxmtopxm : pxmtopxm.o Util.o
 gradient : gradient.o Util.o
+	$(CC) $(CFLAGS) $^ -o gradient $(LDFLAGS)
 
 stretching : stretching.o Util.o
 

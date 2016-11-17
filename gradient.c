@@ -4,11 +4,91 @@
 #include <string.h>
 #include <math.h>
 
-int main(int argc,char **argv){
-	FILE *ifp,*result;
-	int ich1, rows, cols, maxval=255,i,j;
-	gray *graymap,*res_x,*res_y,*magn;
 
+void print(char *name, float *res, int rows, int cols){
+	FILE *result;
+	int i,j;
+	result = fopen(name,"w+");
+	if(result == NULL){
+		exit(1);
+	}
+	fprintf(result, "P5\n");
+	fprintf(result,"%d %d \n", cols, rows);
+	fprintf(result, "%d\n",255);
+	for(i=0; i < rows; i++){
+		for(j=0; j < cols ; j++){
+			fprintf(result, "%c",(int)res[i * cols + j]);
+		}
+	}
+	fclose(result);
+}
+
+void binom(float **in, int cols, int rows){
+	//to do attention gaymap
+	for(i=0; i < rows; i++){
+			for(j=0; j < cols ; j++){
+				if(i<=n*2+1 || j<=n*2+1 || i>=rows-(n*2+1) || j>=cols-(n*2+1)){
+					in[i * cols + j] = 0;
+				}else{
+					in[i * cols + j] = (graymap[(i-2)*cols+j-2]+4*graymap[(i-2)*cols+j-1]+6*graymap[(i-2)*cols+j]+4*graymap[(i-2)*cols+j+1]+graymap[(i-2)*cols+j+2]+4*graymap[(i-1)*cols+j-2]+16*graymap[(i-1)*cols+j-1]+24*graymap[(i-1)*cols+j]+16*graymap[(i-1)*cols+j+1]+4*graymap[(i-1)*cols+j+2]+6*graymap[(i)*cols+j-2]+24*graymap[(i)*cols+j-1]+36*graymap[(i)*cols+j]+24*graymap[(i)*cols+j+1]+6*graymap[(i)*cols+j+2]+4*graymap[(i+1)*cols+j-2]+16*graymap[(i+1)*cols+j-1]+24*graymap[(i+1)*cols+j]+16*graymap[(i+1)*cols+j+1]+4*graymap[(i+1)*cols+j+2]+graymap[(i+2)*cols+j-2]+4*graymap[(i+2)*cols+j-1]+6*graymap[(i+2)*cols+j]+4*graymap[(i+2)*cols+j+1]+graymap[(i+2)*cols+j+2])/256;
+				}
+			}
+		}
+}
+
+
+void stretch(float **res, int rows, int cols){
+	int i,j;
+	float min,max;
+	for(i=0; i < rows; i++){
+		for(j=0; j < cols ; j++){
+			if(i==0 &&j==0){
+				max=(*res)[0];
+				min=(*res)[0];
+			}else{
+				if(max<(*res)[i * cols + j])
+					max=(*res)[i * cols + j];
+				if(min>(*res)[i * cols + j])
+					min=(*res)[i * cols + j];
+			}
+		}
+	}
+
+	for(i=0; i < rows; i++){
+		for(j=0; j < cols ; j++){
+			//(*res)[i * cols + j]=a*((*res)[i * cols + j])+b;
+			(*res)[i * cols + j]=((float) (*res)[i * cols + j]-min)*255.0/(max-min);
+		}
+	}
+}
+
+float *square(float *in, int rows, int cols){
+	int i;
+	float *res;
+	res = (float*) malloc(sizeof(float)*cols*rows)
+	for(i=0; i < rows*cols; i++){
+		res[i]=in[i]*in[i];
+	}
+	return res;
+}
+
+float *mult(float *in1, float *in2, int rows, int cols){
+	int i;
+	float *res;
+	res = (float*) malloc(sizeof(float)*cols*rows)
+	for(i=0; i < rows*cols; i++){
+		res[i]=in1[i]*in2[i];
+	}
+	return res;
+}
+
+
+
+int main(int argc,char **argv){
+	FILE *ifp;
+	int ich1, rows, cols, maxval=255,i,j;
+	gray *graymap;
+	float *res_x,*res_y,*magn;
 	if(argc != 5){
 		printf("apprend a compter");
 		exit(1);
@@ -39,13 +119,10 @@ int main(int argc,char **argv){
    
 
     graymap = (gray *) malloc(cols * rows * sizeof(gray));
-    res_x = (gray *) malloc(cols * rows * sizeof(gray));
-    res_y = (gray *) malloc(cols * rows * sizeof(gray));
-    magn = (gray *) malloc(cols * rows * sizeof(gray));
+    res_x = (float *) malloc(cols * rows * sizeof(float));
+    res_y = (float *) malloc(cols * rows * sizeof(float));
+    magn = (float *) malloc(cols * rows * sizeof(float));
 
-    int x,y,z;
-    z=pow(5,4);
-    z++;
 
 	for(i=0; i < rows; i++){
 		for(j=0; j < cols ; j++){
@@ -53,7 +130,7 @@ int main(int argc,char **argv){
 		}
 	}
 	
-
+	double x,y;
 	for(i=0; i < rows; i++){
 		for(j=0; j < cols ; j++){
 			if((i==0)||(i==rows-1)||(j==0)||(j==cols-1)){
@@ -64,59 +141,34 @@ int main(int argc,char **argv){
 				//printf("%i\n",graymap[i * cols + j]);
 				res_x[i * cols + j] =(-1*graymap[(i-1) * cols + j-1]-2*graymap[i * cols + j-1]-1*graymap[(i+1) * cols + j-1]+1*graymap[(i-1) * cols + j+1]+2*graymap[i * cols + j+1]+1*graymap[(i+1) * cols + j+1])/4;
 				res_y[i * cols + j] =(-1*graymap[(i-1) * cols + j-1]-2*graymap[(i-1) * cols + j]-1*graymap[(i-1) * cols + j+1]+1*graymap[(i+1) * cols + j-1]+2*graymap[(i+1) * cols + j]+1*graymap[(i+1) * cols + j+1])/4;
-				x=(int)res_x[i * cols + j];
-				x=pow(x,2);
-				y=(int)res_y[i * cols + j];
-				y=pow(y,2);
-				x=x+y;
-				magn[i*cols+j]=sqrt(x);
+				
+				
 			}
 		}
 	}
 
-	result = fopen(argv[2],"w");
-	if(result == NULL){
-		exit(1);
-	}
-	fprintf(result, "P5\n");
-	fprintf(result,"%d %d \n", cols, rows);
-	fprintf(result, "%d\n",255);
+	
+	
 	for(i=0; i < rows; i++){
 		for(j=0; j < cols ; j++){
-			fprintf(result, "%c",abs(res_x[i * cols + j]));
-			//printf("%i\n",res_x[i * cols + j]);
+			
+			x=(double) res_x[i * cols + j];
+			x=pow((double) x,(double) 2);
+			
+			y=(double) res_y[i * cols + j];
+			y=pow((double) y,(double) 2);
+			
+			x=x+y;
+				
+			magn[i*cols+j]=(char) sqrt((double)x);
 		}
 	}
-
-	fclose(result);
-	result = fopen(argv[3],"w");
-	if(result == NULL){
-		exit(1);
-	}
-	fprintf(result, "P5\n");
-	fprintf(result,"%d %d \n", cols, rows);
-	fprintf(result, "%d\n",255);
-	for(i=0; i < rows; i++){
-		for(j=0; j < cols ; j++){
-			fprintf(result, "%c",abs(res_y[i * cols + j]));
-		}
-	}
-
-	fclose(result);
-	result = fopen(argv[4],"w");
-	if(result == NULL){
-		exit(1);
-	}
-	fprintf(result, "P5\n");
-	fprintf(result,"%d %d \n", cols, rows);
-	fprintf(result, "%d\n",255);
-	for(i=0; i < rows; i++){
-		for(j=0; j < cols ; j++){
-			fprintf(result, "%c",magn[i * cols + j]);
-		}
-	}
-	// fprintf(result, "%s",res);
-	fclose(result);
+	stretch(&res_x,rows,cols);
+	stretch(&res_y,rows,cols);
+	stretch(&magn,rows,cols);
+	print(argv[2],res_x,rows,cols);
+	print(argv[3],res_y,rows,cols);
+	print(argv[4],magn,rows,cols);
 
 	return 0;
 }
