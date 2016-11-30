@@ -117,7 +117,7 @@ int main(int argc, char **argv) {
     gray *graymap;
     float *res_x, *res_y, *magn;
     if (argc != 7) {
-        printf("apprend a compter");
+        printf("fichierSource , X, Y, magnitude, Harris, alpha pour calc Harris");
         exit(1);
 
     }
