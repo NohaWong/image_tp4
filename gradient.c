@@ -26,8 +26,8 @@ void print(char *name, float *res, int rows, int cols) {
 
 void binom(float **in, int cols, int rows) {
     //to do attention gaymap
-    float *graymap;
-    strcpy(graymap,*in);
+    float *graymap=malloc(sizeof(float)*cols*rows);
+    memcpy(graymap,*in, sizeof(float)*cols*rows);
     for (int i = 0; i < rows; i++) {
         for (int j = 0; j < cols; j++) {
             if (i <= 1 || j <= 1 || i >= rows - 1 || j >= cols -  1) {
@@ -210,7 +210,7 @@ int main(int argc, char **argv) {
     binom(&res_XY,rows,cols);
 
     float *harris=HarrisFunction(res_X2,res_Y2,res_XY,atoi(argv[6]),rows,cols);
-    stretch(&harris,rows,cols);
+    //stretch(&harris,rows,cols);
     print(argv[5],harris,rows,cols);
 
 
