@@ -2,3 +2,6 @@
 gradient
 res*
 magn*
+.idea
+CMakeLists.txt
+boat*.pgm
