@@ -28,9 +28,10 @@ void binom(float **in, int cols, int rows) {
     //to do attention gaymap
     float *graymap=malloc(sizeof(float)*cols*rows);
     memcpy(graymap,*in, sizeof(float)*cols*rows);
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            if (i <= 1 || j <= 1 || i >= rows - 1 || j >= cols -  1) {
+    int i,j;
+    for (i = 0; i < rows; i++) {
+        for (j = 0; j < cols; j++) {
+            if (i <= 1 || j <= 1 || i >= rows - 2 || j >= cols -  2) {
                 (*in)[i * cols + j] = 0;
             } else {
                 (*in)[i * cols + j] = (graymap[(i - 2) * cols + j - 2] + 4 * graymap[(i - 2) * cols + j - 1] +
@@ -102,7 +103,8 @@ float *mult(float *in1, float *in2, int rows, int cols) {
 float *HarrisFunction(float *x2, float *y2, float *xy, float alpha, int rows, int cols){
     float *res=malloc(sizeof(float)*cols*rows);
     float det, trace;
-    for(int i=0;i<rows*cols;i++){
+    int i;
+    for(i=0;i<rows*cols;i++){
         det=x2[i]*y2[i]-xy[i]*xy[i];
         trace=x2[i]+y2[i];
         res[i]=det-alpha*trace*trace;
