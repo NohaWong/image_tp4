@@ -196,7 +196,7 @@ int main(int argc, char **argv) {
     }
     stretch(&res_x, rows, cols);
     stretch(&res_y, rows, cols);
-    stretch(&magn, rows, cols);
+    //stretch(&magn, rows, cols);
     print(argv[2], res_x, rows, cols);
     print(argv[3], res_y, rows, cols);
     print(argv[4], magn, rows, cols);
@@ -207,9 +207,9 @@ int main(int argc, char **argv) {
     float *res_XY=mult(res_x,res_y,rows,cols);
 
     //filter
-    binom(&res_X2,rows,cols);
-    binom(&res_Y2,rows,cols);
-    binom(&res_XY,rows,cols);
+    binom(&res_X2,cols,rows);
+    binom(&res_Y2,cols,rows);
+    binom(&res_XY,cols,rows);
 
     float *harris=HarrisFunction(res_X2,res_Y2,res_XY,atoi(argv[6]),rows,cols);
     //stretch(&harris,rows,cols);
